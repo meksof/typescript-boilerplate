@@ -1,10 +1,15 @@
-export const delayMillis = (delayMs: number): Promise<void> => new Promise(resolve => setTimeout(resolve, delayMs));
+import { interval, map, Observable, take, withLatestFrom } from "rxjs"
 
-export const greet = (name: string): string => `Hello ${name}`
+const a = interval(1000)
+  .pipe(take(2), map(x => `A_${x}`));
 
-export const foo = async (): Promise<boolean> => {
-  console.log(greet('World'))
-  await delayMillis(1000)
-  console.log('done')
-  return true
+const b = interval(250)
+  .pipe(take(10), map(x => `B_${x}`))
+
+export const stream = (): Observable<string> => {
+  return a
+    .pipe(
+      withLatestFrom(b),
+      map(([x, y]) => `${x} >>>>>>>>>> ${y}`)
+    )
 }
